@@ -2,6 +2,7 @@ const express = require("express");
 const handlebars = require("express-handlebars");
 const mongodbConnection = require("./configs/mongodb-connection");
 const { MongoClient } = require("mongodb");
+const listService = require("./services/list-service");
 
 const app = express();
 
@@ -13,14 +14,26 @@ app.use("/static", express.static(__dirname + "/static"));
 
 app.engine("hbs",
     handlebars.create({
-        extname: "hbs"
+        extname: "hbs",
+        helpers: require("./configs/handlebars-helpers")
     }).engine
 );
 app.set("view engine", "hbs");
 app.set("views", __dirname + "/views");
 
 app.get("/", async (req, res) => {
-    res.render("home", { message: "test" });
+    const list = await listService.getList(collection);
+    res.render("home", { list });
+});
+
+app.post("/list", async (req, res) => {
+    const data = req.body;
+    const result = await listService.addList(collection, data);
+    if (!result) {
+        res.status(404).send();
+    } else {
+        res.status(201).send();
+    }
 });
 
 let collection;
@@ -28,5 +41,5 @@ app.listen(3000, async () => {
     console.log("[Server START]");
     const mongoClient = await mongodbConnection();
     collection = mongoClient.db().collection("todo");
-    console.log("[MongoDB Connected]")
+    console.log("[MongoDB Connected]");
 });

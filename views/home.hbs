@@ -3,18 +3,49 @@
     <h3>20xx.xx.xx</h3>
     <div>40%</div>
     <div>
-        <select name="priority">
-            <option value="high">높음</option>
-            <option value="medium">보통</option>
-            <option value="low">낮음</option>
+        <select id="todoPriority">
+            <option value="0">높음</option>
+            <option value="1">보통</option>
+            <option value="2">낮음</option>
         </select>
-        <input type="text"></div>
-        <button type="button">추가</button>
+        <input type="text" id="todo" placeholder="할 일 입력">
+        <button type="button" onclick="addList()">추가</button>
     </div>
     <ul>
-        <li><button type="button" class="btn">높음</button>끝내주게 숨쉬기<input type="checkbox"></li>
-        <li><button type="button" class="btn">높음</button>간지나게 자기<input type="checkbox"></li>
-        <li><button type="button">중간</button>작살나게 밥먹기<input type="checkbox"></li>
-        <li><button type="button">낮음</button>아무것도 안하기<input type="checkbox"></li>
+        {{#each list}}
+            <li><button type="button">{{convertPriority todoPriority}}</button>{{todo}}<input type="checkbox"></li>
+        {{/each}}
     </ul>
 </div>
+
+<script>
+    const postOption = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    async function addList() {
+        const todo = document.getElementById('todo').value;
+        const todoPriority = document.getElementById('todoPriority').value;
+
+        if (!todo) {
+            alert("할 일을 입력해주세요");
+            return ;
+        }
+
+        await fetch("/list", {
+            ...postOption,
+            body: JSON.stringify({ todo, todoPriority })
+        })
+        .then((res) => {
+            if (!res.ok) {
+                alert("할 일을 추가하지 못했습니다");
+            } else {
+                alert("할 일이 추가되었습니다");
+                document.location.reload();
+            }
+        });
+    }
+</script>

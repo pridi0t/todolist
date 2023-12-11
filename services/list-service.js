@@ -21,7 +21,18 @@ async function addList(collection, data) {
     }
 }
 
+async function deleteList(collection, data) {
+    try {
+        await collection.deleteOne(data);
+        return true;
+    } catch (err) {
+        console.error(err);
+        return false;
+    }
+}
+
 module.exports = {
     getList,
-    addList
+    addList,
+    deleteList
 };

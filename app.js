@@ -12,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 // 정적 파일 위치
 app.use("/static", express.static(__dirname + "/static"));
 
+// handlebars
 app.engine("hbs",
     handlebars.create({
         extname: "hbs",
@@ -21,11 +22,13 @@ app.engine("hbs",
 app.set("view engine", "hbs");
 app.set("views", __dirname + "/views");
 
+/* 할 일 목록 */
 app.get("/", async (req, res) => {
     const list = await listService.getList(collection);
     res.render("home", { list });
 });
 
+/* 할 일 추가 */
 app.post("/list", async (req, res) => {
     const data = req.body;
     const result = await listService.addList(collection, data);
@@ -33,6 +36,17 @@ app.post("/list", async (req, res) => {
         res.status(404).send();
     } else {
         res.status(201).send();
+    }
+});
+
+/* 할 일 삭제 */
+app.delete("/list", async (req, res) => {
+    const data = req.body;
+    const result = await listService.deleteList(collection, data);
+    if (!result) {
+        res.status(404).send();
+    } else {
+        res.status(200).send();
     }
 });
 

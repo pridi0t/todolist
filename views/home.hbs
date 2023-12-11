@@ -13,12 +13,18 @@
     </div>
     <ul>
         {{#each list}}
-            <li><button type="button">{{convertPriority todoPriority}}</button>{{todo}}<input type="checkbox"></li>
+        <li>
+            <button type="button">{{convertPriority todoPriority}}</button>
+            <input type="text" value="{{todo}}">
+            <button type="button" onclick="deleteList('{{todo}}', '{{todoPriority}}')">삭제</button>
+            <input type="checkbox">
+        </li>
         {{/each}}
     </ul>
 </div>
 
 <script>
+    /* 할 일 추가 */
     const postOption = {
         method: 'POST',
         headers: {
@@ -32,20 +38,43 @@
 
         if (!todo) {
             alert("할 일을 입력해주세요");
-            return ;
+            return;
         }
 
         await fetch("/list", {
             ...postOption,
             body: JSON.stringify({ todo, todoPriority })
         })
-        .then((res) => {
-            if (!res.ok) {
-                alert("할 일을 추가하지 못했습니다");
-            } else {
-                alert("할 일이 추가되었습니다");
-                document.location.reload();
-            }
-        });
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일을 추가하지 못했습니다");
+                } else {
+                    alert("할 일이 추가되었습니다");
+                    document.location.reload();
+                }
+            });
+    }
+
+    /* 할 일 삭제 */
+    const deleteOption = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    async function deleteList(todo, todoPriority) {
+        await fetch("/list", {
+            ...deleteOption,
+            body: JSON.stringify({ todo, todoPriority })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일을 삭제하지 못했습니다");
+                } else {
+                    alert("할 일이 삭제되었습니다");
+                    document.location.reload();
+                }
+            });
     }
 </script>

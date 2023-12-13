@@ -16,7 +16,7 @@
         <li>
             <button type="button">{{convertPriority todoPriority}}</button>
             <input type="text" value="{{todo}}" onchange="updateTodo('{{_id}}', '{{todo}}', this)">
-            <button type="button" onclick="deleteList('{{todo}}', '{{todoPriority}}')">삭제</button>
+            <button type="button" onclick="deleteList('{{_id}}')">삭제</button>
             <input type="checkbox">
         </li>
         {{/each}}
@@ -90,10 +90,10 @@
         }
     }
 
-    async function deleteList(todo, todoPriority) {
+    async function deleteList(id) {
         await fetch("/list", {
             ...deleteOption,
-            body: JSON.stringify({ todo, todoPriority })
+            body: JSON.stringify({ id })
         })
             .then((res) => {
                 if (!res.ok) {

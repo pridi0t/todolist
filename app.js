@@ -52,8 +52,8 @@ app.patch("/list-todo", async (req, res) => {
 
 /* 할 일 삭제 */
 app.delete("/list", async (req, res) => {
-    const data = req.body;
-    const result = await listService.deleteList(collection, data);
+    const id = req.body;
+    const result = await listService.deleteList(collection, id);
     if (!result) {
         res.status(404).send();
     } else {

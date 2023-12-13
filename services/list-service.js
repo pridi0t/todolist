@@ -31,9 +31,9 @@ async function updateList(collection, data) {
     }
 }
 
-async function deleteList(collection, data) {
+async function deleteList(collection, id) {
     try {
-        await collection.deleteOne(data);
+        await collection.deleteOne({ _id: new ObjectId(id) });
         return true;
     } catch (err) {
         console.error(err);

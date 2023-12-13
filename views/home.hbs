@@ -15,7 +15,7 @@
         {{#each list}}
         <li>
             <button type="button">{{convertPriority todoPriority}}</button>
-            <input type="text" value="{{todo}}">
+            <input type="text" value="{{todo}}" onchange="updateTodo('{{_id}}', '{{todo}}', this)">
             <button type="button" onclick="deleteList('{{todo}}', '{{todoPriority}}')">삭제</button>
             <input type="checkbox">
         </li>
@@ -50,6 +50,33 @@
                     alert("할 일을 추가하지 못했습니다");
                 } else {
                     alert("할 일이 추가되었습니다");
+                    document.location.reload();
+                }
+            });
+    }
+
+    /* 할 일 수정 */
+    const updateOption = {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    async function updateTodo(id, before, after) {
+        if (!after.value) {
+            after.value = before;
+            return ;
+        }
+
+        await fetch("/list-todo", {
+            ...updateOption,
+            body: JSON.stringify({ id, todo: after.value })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일을 수정하지 못했습니다");
+                } else {
                     document.location.reload();
                 }
             });

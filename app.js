@@ -39,6 +39,17 @@ app.post("/list", async (req, res) => {
     }
 });
 
+/* 할 일 수정 */
+app.patch("/list-todo", async (req, res) => {
+    const data = req.body;
+    const result = await listService.updateList(collection, data);
+    if (!result) {
+        res.status(404).send();
+    } else {
+        res.status(200).send();
+    }
+});
+
 /* 할 일 삭제 */
 app.delete("/list", async (req, res) => {
     const data = req.body;

@@ -21,6 +21,16 @@ async function addList(collection, data) {
     }
 }
 
+async function updateList(collection, data) {
+    try {
+        await collection.updateOne({ _id: new ObjectId(data.id) }, { $set: { todo: data.todo } });
+        return true;
+    } catch (err) {
+        console.error(err);
+        return false;
+    }
+}
+
 async function deleteList(collection, data) {
     try {
         await collection.deleteOne(data);
@@ -34,5 +44,6 @@ async function deleteList(collection, data) {
 module.exports = {
     getList,
     addList,
+    updateList,
     deleteList
 };

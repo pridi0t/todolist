@@ -40,7 +40,7 @@ app.post("/list", async (req, res) => {
 });
 
 /* 할 일 수정 */
-app.patch("/list-todo", async (req, res) => {
+app.patch("/list", async (req, res) => {
     const data = req.body;
     const result = await listService.updateList(collection, data);
     if (!result) {

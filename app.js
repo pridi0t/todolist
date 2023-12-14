@@ -24,8 +24,10 @@ app.set("views", __dirname + "/views");
 
 /* 할 일 목록 */
 app.get("/", async (req, res) => {
+    const today = listService.getDate();
+    const progress = await listService.getProgress(collection);
     const list = await listService.getList(collection);
-    res.render("home", { list });
+    res.render("home", { today, progress, list });
 });
 
 /* 할 일 추가 */

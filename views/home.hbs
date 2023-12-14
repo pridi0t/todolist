@@ -1,20 +1,137 @@
 <div>
     <h2>TODOLIST</h2>
-    <h3>20xx.xx.xx</h3>
-    <div>40%</div>
+    <h3>{{today}}</h3>
+    <div>{{progress}}</div>
     <div>
-        <select name="priority">
-            <option value="high">높음</option>
-            <option value="medium">보통</option>
-            <option value="low">낮음</option>
+        <select id="todoPriority">
+            <option value="0">높음</option>
+            <option value="1">보통</option>
+            <option value="2">낮음</option>
         </select>
-        <input type="text"></div>
-        <button type="button">추가</button>
+        <input type="text" id="todo" placeholder="할 일 입력">
+        <button type="button" onclick="addList()">추가</button>
     </div>
     <ul>
-        <li><button type="button" class="btn">높음</button>끝내주게 숨쉬기<input type="checkbox"></li>
-        <li><button type="button" class="btn">높음</button>간지나게 자기<input type="checkbox"></li>
-        <li><button type="button">중간</button>작살나게 밥먹기<input type="checkbox"></li>
-        <li><button type="button">낮음</button>아무것도 안하기<input type="checkbox"></li>
+        {{#each list}}
+        <li>
+            <button type="button" onclick="updatePriority('{{_id}}', '{{todoPriority}}')">{{convertPriority todoPriority}}</button>
+            <input type="text" value="{{todo}}" onchange="updateTodo('{{_id}}', '{{todo}}', this)" {{#if checked}}style="text-decoration: line-through"{{/if}}>
+            <button type="button" onclick="deleteList('{{_id}}')">삭제</button>
+            <input type="checkbox" onclick="updateChecked('{{_id}}', this)" {{#if checked}}checked="true"{{/if}}>
+        </li>
+        {{/each}}
     </ul>
 </div>
+
+<script>
+    /* 할 일 추가 */
+    const postOption = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    async function addList() {
+        const todo = document.getElementById('todo').value;
+        const todoPriority = +(document.getElementById('todoPriority').value);
+
+        if (!todo) {
+            alert("할 일을 입력해주세요");
+            return;
+        }
+
+        await fetch("/list", {
+            ...postOption,
+            body: JSON.stringify({ todo, todoPriority })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일을 추가하지 못했습니다");
+                } else {
+                    alert("할 일이 추가되었습니다");
+                    document.location.reload();
+                }
+            });
+    }
+
+    /* 할 일 수정 */
+    const updateOption = {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    async function updateTodo(id, before, after) {
+        if (!after.value) {
+            after.value = before;
+            return ;
+        }
+
+        await fetch("/list", {
+            ...updateOption,
+            body: JSON.stringify({ id, todo: after.value })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일을 수정하지 못했습니다");
+                } else {
+                    document.location.reload();
+                }
+            });
+    }
+
+    async function updatePriority(id, priority) {
+        const afterPriority = (priority + 2) % 3;
+
+        await fetch("/list", {
+            ...updateOption,
+            body: JSON.stringify({ id, todoPriority: afterPriority })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일의 우선순위를 변경하지 못했습니다");
+                } else {
+                    document.location.reload();
+                }
+            });
+    }
+
+    async function updateChecked(id, checkbox) {
+        await fetch("/list", {
+            ...updateOption,
+            body: JSON.stringify({ id, checked: checkbox.checked })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일의 상태를 변경하지 못했습니다");
+                } else {
+                    document.location.reload();
+                }
+            });
+    }
+
+    /* 할 일 삭제 */
+    const deleteOption = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    async function deleteList(id) {
+        await fetch("/list", {
+            ...deleteOption,
+            body: JSON.stringify({ id })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일을 삭제하지 못했습니다");
+                } else {
+                    alert("할 일이 삭제되었습니다");
+                    document.location.reload();
+                }
+            });
+    }
+</script>

@@ -14,7 +14,7 @@
     <ul>
         {{#each list}}
         <li>
-            <button type="button">{{convertPriority todoPriority}}</button>
+            <button type="button" onclick="updatePriority('{{_id}}', '{{todoPriority}}')">{{convertPriority todoPriority}}</button>
             <input type="text" value="{{todo}}" onchange="updateTodo('{{_id}}', '{{todo}}', this)" {{#if checked}}style="text-decoration: line-through"{{/if}}>
             <button type="button" onclick="deleteList('{{_id}}')">삭제</button>
             <input type="checkbox" onclick="updateChecked('{{_id}}', this)" {{#if checked}}checked="true"{{/if}}>
@@ -34,7 +34,7 @@
 
     async function addList() {
         const todo = document.getElementById('todo').value;
-        const todoPriority = document.getElementById('todoPriority').value;
+        const todoPriority = +(document.getElementById('todoPriority').value);
 
         if (!todo) {
             alert("할 일을 입력해주세요");
@@ -76,6 +76,22 @@
             .then((res) => {
                 if (!res.ok) {
                     alert("할 일을 수정하지 못했습니다");
+                } else {
+                    document.location.reload();
+                }
+            });
+    }
+
+    async function updatePriority(id, priority) {
+        const afterPriority = (priority + 2) % 3;
+
+        await fetch("/list", {
+            ...updateOption,
+            body: JSON.stringify({ id, todoPriority: afterPriority })
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    alert("할 일의 우선순위를 변경하지 못했습니다");
                 } else {
                     document.location.reload();
                 }

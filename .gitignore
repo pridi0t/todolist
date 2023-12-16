@@ -131,6 +131,6 @@ dist
 
 # CUSTOM
 node_modules/*
-configs/*
+configs/mongodb-connection.js
 package.json
 package-lock.json

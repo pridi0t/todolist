@@ -16,7 +16,7 @@
     <ul class="space-y-2">
         {{#each list}}
         <li class="flex space-x-1">
-            <button type="button" class="btn btn-success btn-sm" onclick="updatePriority('{{_id}}', '{{todoPriority}}')">{{convertPriority todoPriority}}</button>
+            <button type="button" class="btn {{convertPriorityColor todoPriority}} btn-sm" onclick="updatePriority('{{_id}}', '{{todoPriority}}')">{{convertPriority todoPriority}}</button>
             <input type="text" value="{{todo}}" class="input input-bordered input-sm flex-auto" onchange="updateTodo('{{_id}}', '{{todo}}', this)" {{#if checked}}disabled{{/if}}>
             <input type="checkbox" class="checkbox checkbox-neutral checkbox-lg self-center" onclick="updateChecked('{{_id}}', this)" {{#if checked}}checked="true"{{/if}}>
             <button type="button" class="btn btn-error btn-sm btn-square" onclick="deleteList('{{_id}}')">X</button>

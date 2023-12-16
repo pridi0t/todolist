@@ -1,29 +1,57 @@
-<div>
-    <h2>TODOLIST</h2>
-    <h3>{{today}}</h3>
-    <div>{{progress}}</div>
-    <div>
-        <select id="todoPriority">
-            <option value="0">높음</option>
-            <option value="1">보통</option>
-            <option value="2">낮음</option>
-        </select>
-        <input type="text" id="todo" placeholder="할 일 입력">
-        <button type="button" onclick="addList()">추가</button>
+<div role="alert" class="alert alert-success" style="display:none">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <p id="alertSuccess"></p>
+    <button class="btn btn-sm" onclick="pageReload()">확인</button>
+</div>
+<div role="alert" class="alert alert-error" style="display:none">
+  <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+  <p id="alertError"></p>
+  <button class="btn btn-sm" onclick="pageReload()">확인</button>
+</div>
+<div class="artboard phone-2 mx-auto space-y-3">
+    <div class="space-y-4 my-8">
+        <h2 class="text-3xl font-bold text-center my-4">TODOLIST</h2>
+        <h3 class="text-base font-bold text-center">{{today}}</h3>
+        <progress class="progress" value="{{progress}}" max="100"></progress>
+        <div class="flex space-x-1">
+            <select id="todoPriority" class="select select-neutral select-sm">
+                <option value="0">높음</option>
+                <option value="1">보통</option>
+                <option value="2">낮음</option>
+            </select>
+            <input type="text" id="todo" class="input input-bordered input-neutral input-sm flex-auto" placeholder="할 일 입력" >
+            <button type="button" class="btn btn-neutral btn-sm" onclick="addList()">추가</button>
+        </div>
     </div>
-    <ul>
+    <ul class="space-y-2">
         {{#each list}}
-        <li>
-            <button type="button" onclick="updatePriority('{{_id}}', '{{todoPriority}}')">{{convertPriority todoPriority}}</button>
-            <input type="text" value="{{todo}}" onchange="updateTodo('{{_id}}', '{{todo}}', this)" {{#if checked}}style="text-decoration: line-through"{{/if}}>
-            <button type="button" onclick="deleteList('{{_id}}')">삭제</button>
-            <input type="checkbox" onclick="updateChecked('{{_id}}', this)" {{#if checked}}checked="true"{{/if}}>
+        <li class="flex space-x-1">
+            <button type="button" class="btn {{convertPriorityColor todoPriority}} btn-sm" onclick="updatePriority('{{_id}}', '{{todoPriority}}')">{{convertPriority todoPriority}}</button>
+            <input type="text" value="{{todo}}" class="input input-bordered input-sm flex-auto" onchange="updateTodo('{{_id}}', '{{todo}}', this)" {{#if checked}}disabled{{/if}}>
+            <input type="checkbox" class="checkbox checkbox-neutral checkbox-lg self-center" onclick="updateChecked('{{_id}}', this)" {{#if checked}}checked="true"{{/if}}>
+            <button type="button" class="btn btn-error btn-sm btn-square" onclick="deleteList('{{_id}}')">X</button>
         </li>
         {{/each}}
     </ul>
 </div>
 
 <script>
+    /* 커스텀알림창 */
+    function pageReload() {
+        document.location.reload();
+    }
+
+    function customAlert(type, message) {
+        let element;
+        if (type === "success") {
+            element = document.getElementById('alertSuccess');
+        } else {
+            element = document.getElementById('alertError');
+        }
+        element.innerText = `${message} (확인을 누르면 상태가 변경됩니다)`;
+        element.parentNode.removeAttribute("style");
+    }
+
     /* 할 일 추가 */
     const postOption = {
         method: 'POST',
@@ -37,7 +65,7 @@
         const todoPriority = +(document.getElementById('todoPriority').value);
 
         if (!todo) {
-            alert("할 일을 입력해주세요");
+            customAlert("error", "할 일을 입력해주세요");
             return;
         }
 
@@ -47,10 +75,9 @@
         })
             .then((res) => {
                 if (!res.ok) {
-                    alert("할 일을 추가하지 못했습니다");
+                    customAlert("error", "할 일을 추가하지 못했습니다");
                 } else {
-                    alert("할 일이 추가되었습니다");
-                    document.location.reload();
+                    customAlert("success", "할 일이 추가되었습니다");
                 }
             });
     }
@@ -75,7 +102,7 @@
         })
             .then((res) => {
                 if (!res.ok) {
-                    alert("할 일을 수정하지 못했습니다");
+                    customAlert("error", "할 일을 수정하지 못했습니다");
                 } else {
                     document.location.reload();
                 }
@@ -91,7 +118,7 @@
         })
             .then((res) => {
                 if (!res.ok) {
-                    alert("할 일의 우선순위를 변경하지 못했습니다");
+                    customAlert("error", "할 일의 우선순위를 변경하지 못했습니다");
                 } else {
                     document.location.reload();
                 }
@@ -105,7 +132,7 @@
         })
             .then((res) => {
                 if (!res.ok) {
-                    alert("할 일의 상태를 변경하지 못했습니다");
+                    customAlert("error", "할 일의 상태를 변경하지 못했습니다");
                 } else {
                     document.location.reload();
                 }
@@ -127,10 +154,9 @@
         })
             .then((res) => {
                 if (!res.ok) {
-                    alert("할 일을 삭제하지 못했습니다");
+                    customAlert("error", "할 일을 삭제하지 못했습니다");
                 } else {
-                    alert("할 일이 삭제되었습니다");
-                    document.location.reload();
+                    customAlert("success", "할 일이 삭제되었습니다");
                 }
             });
     }
